@@ -5,40 +5,32 @@
  */
 package com.mycompany.cameldemo;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.sql.Date;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-import com.mycompany.cameldemo.databases.publisher.PublisherRepository;
-import com.mycompany.cameldemo.model.*;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.ScheduledPollConsumer;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
+
+import com.mycompany.cameldemo.databases.publisher.PublisherRepository;
+import com.mycompany.cameldemo.model.Allergy;
+import com.mycompany.cameldemo.model.Ingredient;
+import com.mycompany.cameldemo.model.IngredientAllergy;
+import com.mycompany.cameldemo.model.MealType;
+import com.mycompany.cameldemo.model.MeasuredIngredient;
+import com.mycompany.cameldemo.model.Menu;
+import com.mycompany.cameldemo.model.MenuAllergy;
+import com.mycompany.cameldemo.model.MenuIngredient;
+import com.mycompany.cameldemo.model.MenuRecipe;
+import com.mycompany.cameldemo.model.Recipe;
+import com.mycompany.cameldemo.model.RecipeAllergy;
+import com.mycompany.cameldemo.model.RecipeType;
 
 public class PollingConsumer extends ScheduledPollConsumer
 {
     private PollingEndpoint endpoint;
     private static int count = 0;
-    private Date now;
+    private static long lastUpdate = 0;
 
     public PollingConsumer(PollingEndpoint endpoint, Processor processor)
     {
@@ -51,20 +43,12 @@ public class PollingConsumer extends ScheduledPollConsumer
     protected int poll() throws Exception 
     {
         count++;
-        java.util.Date utilDate = new java.util.Date();
-        if(now == null)
-        {
-            now = new Date(0);
-        }
-        else
-        {
-            now = new Date(utilDate.getTime());
-        }
 
         System.out.println("Poll #" + count + " begun");
         
         String operationPath = endpoint.getOperationPath();
         if(operationPath.equals("queryDatabase")) return processDatabaseQuery();
+        
 
         // only one operation implemented for now !
         throw new IllegalArgumentException("Incorrect operation: " + operationPath);
@@ -72,25 +56,26 @@ public class PollingConsumer extends ScheduledPollConsumer
 
     private int processDatabaseQuery() throws Exception 
     {
+//    	System.out.println(lastUpdate);
     	PublisherRepository repo = new PublisherRepository();
+    	long tempLastUpdate = lastUpdate - 30*1000;
+    	lastUpdate = System.currentTimeMillis();
         try {
         	ArrayList<ArrayList> collections = new ArrayList();
         	
-        	Collection<Allergy> allergies = repo.getAllergies(now);
-            Collection<Ingredient> ingredients = repo.getIngredients(now);
-            Collection<IngredientAllergy> ingredientAllergies = repo.getIngredientAllergies(now);
-            Collection<MealType> mealTypes = repo.getMealTypes(now);
-            Collection<MeasuredIngredient> measuredIngredients = repo.getMeasuredIngredients(now);
-            Collection<RecipeType> recipeTypes = repo.getRecipeTypes(now);
-            Collection<Recipe> recipes = repo.getRecipes(now);
-            Collection<RecipeAllergy> recipeAllergies = repo.getRecipeAllergies(now);
-            Collection<Menu> menus = repo.getMenus(now);
-            Collection<MenuAllergy> menuAllergies = repo.getMenuAllergies(now);
-            Collection<MenuIngredient> menuIngredients = repo.getMenuIngredients(now);
-            Collection<MenuRecipe> menuRecipes = repo.getMenuRecipes(now);
+        	Collection<Allergy> allergies = repo.getAllergies(tempLastUpdate);
+            Collection<Ingredient> ingredients = repo.getIngredients(tempLastUpdate);
+            Collection<IngredientAllergy> ingredientAllergies = repo.getIngredientAllergies(tempLastUpdate);
+            Collection<MealType> mealTypes = repo.getMealTypes(tempLastUpdate);
+            Collection<MeasuredIngredient> measuredIngredients = repo.getMeasuredIngredients(tempLastUpdate);
+            Collection<RecipeType> recipeTypes = repo.getRecipeTypes(tempLastUpdate);
+            Collection<Recipe> recipes = repo.getRecipes(tempLastUpdate);
+            Collection<RecipeAllergy> recipeAllergies = repo.getRecipeAllergies(tempLastUpdate);
+            Collection<Menu> menus = repo.getMenus(tempLastUpdate);
+            Collection<MenuAllergy> menuAllergies = repo.getMenuAllergies(tempLastUpdate);
+            Collection<MenuIngredient> menuIngredients = repo.getMenuIngredients(tempLastUpdate);
+            Collection<MenuRecipe> menuRecipes = repo.getMenuRecipes(tempLastUpdate);
             
-            
-                        
             collections.add((ArrayList) allergies);
             collections.add((ArrayList) ingredients);
             collections.add((ArrayList) ingredientAllergies);
@@ -103,7 +88,6 @@ public class PollingConsumer extends ScheduledPollConsumer
             collections.add((ArrayList) menuAllergies);
             collections.add((ArrayList) menuIngredients);
             collections.add((ArrayList) menuRecipes);
-            
             
             Exchange exchange = getEndpoint().createExchange();
             exchange.getIn().setBody(collections, ArrayList.class);

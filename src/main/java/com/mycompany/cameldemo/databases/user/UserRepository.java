@@ -11,17 +11,10 @@ import com.mycompany.cameldemo.model.Model;
 public class UserRepository
 {
     private static Sql2o sql2o;
-    private final static String DB_URL = "mysql://80.255.6.114:3306/FindFood_User";
-    //private final static String DB_URL = "mysql://localhost:3306/FindFood_User";
-    private final static String DB_USER = "FF_User";
-    private final static String DB_PASS = "Dr4X8gvT";
 
-    public UserRepository()
+    public static void loadDatabaseConnection(String DB_URL, String DB_USER, String DB_PASS)
     {
-        if(UserRepository.sql2o == null)
-        {
-            UserRepository.sql2o = new Sql2o(DB_URL, DB_USER, DB_PASS);
-        }
+    	sql2o = new Sql2o(DB_URL, DB_USER, DB_PASS);
     }
 
     protected static Sql2o getSql2o() {
@@ -30,8 +23,9 @@ public class UserRepository
     
     protected void executeUpdate(String sql, Model model)
     {
+    	Connection con = null;
     	try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             con.createQuery(sql, true)
                     .bind(model)
                     .executeUpdate();
@@ -39,6 +33,10 @@ public class UserRepository
         {
             e.printStackTrace();
         }
+    	finally
+    	{
+    		con.close();
+    	}
     }
     
     public boolean exists(int pk)

@@ -1,6 +1,5 @@
 package com.mycompany.cameldemo.databases.publisher;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,236 +14,290 @@ import com.mycompany.cameldemo.model.*;
 public class PublisherRepository
 {
     private static Sql2o sql2o;
-    private final static String DB_URL = "mysql://80.255.6.114:3306/FindFood_Publisher"; // Use when developing to test on localhost
-    private final static String DB_USER = "FF_Publisher";
-    private final static String DB_PASS = "yQjS6yiA";
-
-    public PublisherRepository()
+    
+    public static void loadDatabaseConnection(String DB_URL, String DB_USER, String DB_PASS)
     {
-        if(PublisherRepository.sql2o == null)
-        {
-            PublisherRepository.sql2o = new Sql2o(DB_URL, DB_USER, DB_PASS);
-        }
+    	sql2o = new Sql2o(DB_URL, DB_USER, DB_PASS);
     }
     
-    public Collection<Allergy> getAllergies(Date lastPoll)
+    public Collection<Allergy> getAllergies(long lastPoll)
     {
         Collection<Allergy> allergies;
         String sql =
                 "SELECT allergyId, allergyName, allergyDescription " +
-                        "FROM Allergies WHERE published = 1 AND createdDate >= :lastPoll";
+                        "FROM Allergies WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             allergies = con.createQuery(sql)
-                    .addParameter("lastPoll",lastPoll.getTime())
+                    .addParameter("lastPoll",lastPoll)
                     .executeAndFetch(Allergy.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return allergies;
     }
-    
-    public Collection<Ingredient> getIngredients(Date lastPoll) {
+//    published = 1 AND 
+    public Collection<Ingredient> getIngredients(long lastPoll) {
         Collection<Ingredient> ingredients;
         String sql =
                 "SELECT ingredientId, ingredientName, ingredientDescription " +
-                    "FROM Ingredients WHERE published = 1 AND createdDate >= :lastPoll";
+                    "FROM Ingredients WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             ingredients = con.createQuery(sql)
-            		.addParameter("lastPoll",lastPoll.getTime())
+            		.addParameter("lastPoll",lastPoll)
                     .executeAndFetch(Ingredient.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return ingredients;
     }
     
-    public Collection<IngredientAllergy> getIngredientAllergies(Date lastPoll)
+    public Collection<IngredientAllergy> getIngredientAllergies(long lastPoll)
     {
         Collection<IngredientAllergy> ingredientAllergies;
         String sql =
                 "SELECT ingredientAllergyId, allergyId, ingredientId " +
-                        "FROM IngredientAllergies";
+                        "FROM IngredientAllergies WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             ingredientAllergies = con.createQuery(sql)
-//                    .addParameter("lastPoll",lastPoll.getTime())
+                    .addParameter("lastPoll",lastPoll)
                     .executeAndFetch(IngredientAllergy.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return ingredientAllergies;
     }
     
-    public Collection<MealType> getMealTypes(Date lastPoll) {
+    public Collection<MealType> getMealTypes(long lastPoll) {
         Collection<MealType> mealTypes;
         String sql =
                 "SELECT mealTypeId, mealTypeName " +
-                    "FROM MealTypes WHERE published = 1 AND createdDate >= :lastPoll";
+                    "FROM MealTypes WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             mealTypes = con.createQuery(sql)
-            		.addParameter("lastPoll",lastPoll.getTime())
+            		.addParameter("lastPoll",lastPoll)
                     .executeAndFetch(MealType.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return mealTypes;
     }
     
-    public Collection<MeasuredIngredient> getMeasuredIngredients(Date lastPoll) {
+    public Collection<MeasuredIngredient> getMeasuredIngredients(long lastPoll) {
         Collection<MeasuredIngredient> measuredIngredients;
         String sql =
                 "SELECT measuredIngredientId, recipeId, ingredientId, amount, measure " +
-                    "FROM MeasuredIngredients";
+                    "FROM MeasuredIngredients WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             measuredIngredients = con.createQuery(sql)
-            		//.addParameter("lastPoll",lastPoll.getTime())
+            		.addParameter("lastPoll",lastPoll)
                     .executeAndFetch(MeasuredIngredient.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return measuredIngredients;
     }
     
-    public Collection<RecipeType> getRecipeTypes(Date lastPoll) {
+    public Collection<RecipeType> getRecipeTypes(long lastPoll) {
         Collection<RecipeType> recipeTypes;
         String sql =
                 "SELECT recipeTypeId, recipeTypeName " +
-                    "FROM RecipeTypes";
+                    "FROM RecipeTypes WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             recipeTypes = con.createQuery(sql)
-            		//.addParameter("lastPoll",lastPoll.getTime())
+            		.addParameter("lastPoll",lastPoll)
                     .executeAndFetch(RecipeType.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return recipeTypes;
     }
     
-    public Collection<Recipe> getRecipes(Date lastPoll) {
+    public Collection<Recipe> getRecipes(long lastPoll) {
         Collection<Recipe> recipes;
         String sql =
                 "SELECT recipeId, recipeName, recipeDescription, recipeImageFilePath, recipeTypeId, publisherName " +
-                    "FROM Recipes WHERE published = 1 AND createdDate >= :lastPoll";
+                    "FROM Recipes WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             recipes = con.createQuery(sql)
-            		.addParameter("lastPoll",lastPoll.getTime())
+            		.addParameter("lastPoll",lastPoll)
                     .executeAndFetch(Recipe.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return recipes;
     }
     
-    public Collection<RecipeAllergy> getRecipeAllergies(Date lastPoll)
+    public Collection<RecipeAllergy> getRecipeAllergies(long lastPoll)
     {
         Collection<RecipeAllergy> recipeAllergies;
         String sql =
                 "SELECT recipeAllergyId, allergyId, recipeId " +
-                        "FROM RecipeAllergies";
+                        "FROM RecipeAllergies WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             recipeAllergies = con.createQuery(sql)
-//                    .addParameter("lastPoll",lastPoll.getTime())
+                    .addParameter("lastPoll",lastPoll)
                     .executeAndFetch(RecipeAllergy.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return recipeAllergies;
     }
     
-    public Collection<Menu> getMenus(Date lastPoll) {
+    public Collection<Menu> getMenus(long lastPoll) {
         Collection<Menu> menus;
         String sql =
                 "SELECT menuId, menuName, menuDescription, menuImageFilePath, mealTypeId, publisherName " +
-                    "FROM Menus WHERE published = 1 AND createdDate >= :lastPoll";
+                    "FROM Menus WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             menus = con.createQuery(sql)
-            		.addParameter("lastPoll",lastPoll.getTime())
+            		.addParameter("lastPoll",lastPoll)
                     .executeAndFetch(Menu.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return menus;
     }
     
-    public Collection<MenuAllergy> getMenuAllergies(Date lastPoll)
+    public Collection<MenuAllergy> getMenuAllergies(long lastPoll)
     {
         Collection<MenuAllergy> menuAllergies;
         String sql =
                 "SELECT menuAllergyId, allergyId, menuId " +
-                        "FROM MenuAllergies";
+                        "FROM MenuAllergies WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             menuAllergies = con.createQuery(sql)
-//                    .addParameter("lastPoll",lastPoll.getTime())
+                    .addParameter("lastPoll",lastPoll)
                     .executeAndFetch(MenuAllergy.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return menuAllergies;
     }
     
-    public Collection<MenuIngredient> getMenuIngredients(Date lastPoll)
+    public Collection<MenuIngredient> getMenuIngredients(long lastPoll)
     {
         Collection<MenuIngredient> menuIngredients;
         String sql =
                 "SELECT menuIngredientId, ingredientId, menuId " +
-                        "FROM MenuIngredients";
+                        "FROM MenuIngredients WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             menuIngredients = con.createQuery(sql)
-//                    .addParameter("lastPoll",lastPoll.getTime())
+                    .addParameter("lastPoll",lastPoll)
                     .executeAndFetch(MenuIngredient.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
         }
+        finally
+        {
+        	con.close();
+        }
         return menuIngredients;
     }
     
-    public Collection<MenuRecipe> getMenuRecipes(Date lastPoll)
+    public Collection<MenuRecipe> getMenuRecipes(long lastPoll)
     {
         Collection<MenuRecipe> menuRecipes;
         String sql =
                 "SELECT menuRecipeId, recipeId, menuId " +
-                        "FROM MenuRecipes";
+                        "FROM MenuRecipes WHERE createdDate >= :lastPoll";
+        Connection con = null;
         try{
-            Connection con = sql2o.open();
+            con = sql2o.open();
             menuRecipes = con.createQuery(sql)
-//                    .addParameter("lastPoll",lastPoll.getTime())
+                    .addParameter("lastPoll",lastPoll)
                     .executeAndFetch(MenuRecipe.class);
         }catch (Exception e)
         {
             e.printStackTrace();
             return new ArrayList<>();
+        }
+        finally
+        {
+        	con.close();
         }
         return menuRecipes;
     }
