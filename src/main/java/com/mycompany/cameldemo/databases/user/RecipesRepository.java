@@ -30,8 +30,8 @@ public class RecipesRepository extends UserRepository
 	public void create(Recipe model)
 	{
         String sql = 
-        		"INSERT INTO Recipes (recipeId, recipeName, recipeDescription, recipeImageFilePath, recipeTypeId, publisherName) " +
-                        "VALUES (:recipeId, :recipeName, :recipeDescription, :recipeImageFilePath, :recipeTypeId, :publisherName)";
+        		"INSERT INTO Recipes (recipeId, recipeName, recipeDescription, recipeImageFilePath, recipeTypeId, publisherName, price) " +
+                        "VALUES (:recipeId, :recipeName, :recipeDescription, :recipeImageFilePath, :recipeTypeId, :publisherName, :price)";
         executeUpdate(sql, model);
 	}
 	

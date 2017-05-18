@@ -13,6 +13,7 @@ public class Recipe implements Model {
     private String recipeImageFilePath;
     private int recipeTypeId;
     private String publisherName;
+    private double price = 10;
 
     public Recipe(){}
 
@@ -63,6 +64,14 @@ public class Recipe implements Model {
     public void setPublisherName(String publisherName) {
         this.publisherName = publisherName;
     }
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
 
 	@Override
 	public void send() 

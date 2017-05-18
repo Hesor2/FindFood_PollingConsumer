@@ -30,8 +30,8 @@ public class MenusRepository extends UserRepository
 	public void create(Menu model)
 	{
         String sql = 
-        		"INSERT INTO Menus (menuId, menuName, menuDescription, menuImageFilePath, mealTypeId, publisherName) " +
-                        "VALUES (:menuId, :menuName, :menuDescription, :menuImageFilePath, :mealTypeId, :publisherName)";
+        		"INSERT INTO Menus (menuId, menuName, menuDescription, menuImageFilePath, mealTypeId, publisherName, price) " +
+                        "VALUES (:menuId, :menuName, :menuDescription, :menuImageFilePath, :mealTypeId, :publisherName, :price)";
         executeUpdate(sql, model);
 	}
 	

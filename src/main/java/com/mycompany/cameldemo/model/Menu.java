@@ -13,6 +13,7 @@ public class Menu implements Model
     private String menuImageFilePath;
     private int mealTypeId;
     private String publisherName;
+    private double price = 10;
 
     public Menu(){}
 
@@ -62,6 +63,14 @@ public class Menu implements Model
 
 	public void setPublisherName(String publisherName) {
 		this.publisherName = publisherName;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
 	}
 
 	@Override
